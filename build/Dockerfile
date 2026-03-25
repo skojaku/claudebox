@@ -149,6 +149,7 @@ RUN mkdir -p /usr/local/lib/claudebox
 COPY tools-report.sh /usr/local/lib/claudebox/tools-report.sh
 
 USER $USERNAME
+ENV PATH="/home/claude/.local/bin:${PATH}"
 RUN claude --version
 
 WORKDIR /workspace
