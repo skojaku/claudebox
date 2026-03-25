@@ -89,9 +89,7 @@ RUN echo 'export NVM_DIR="$HOME/.nvm"' >> ~/.bashrc && \
     echo '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"' >> ~/.bashrc && \
     echo '[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"' >> ~/.bashrc
 
-RUN bash -c "source $NVM_DIR/nvm.sh && \
-    nvm use default && \
-    npm install -g @anthropic-ai/claude-code"
+RUN curl -fsSL https://cli.anthropic.com/install.sh | sh
 
 RUN cat >> ~/.zshrc <<'EOF'
 
@@ -151,7 +149,7 @@ RUN mkdir -p /usr/local/lib/claudebox
 COPY tools-report.sh /usr/local/lib/claudebox/tools-report.sh
 
 USER $USERNAME
-RUN bash -c "source $NVM_DIR/nvm.sh && claude --version"
+RUN claude --version
 
 WORKDIR /workspace
 USER root

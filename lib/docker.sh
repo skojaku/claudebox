@@ -221,12 +221,8 @@ run_claudebox_container() {
         -v "$PROJECT_PARENT_DIR":/home/$DOCKER_USER/.claudebox
     )
     
-    # Ensure .claude directory exists
-    if [[ ! -d "$PROJECT_SLOT_DIR/.claude" ]]; then
-        mkdir -p "$PROJECT_SLOT_DIR/.claude"
-    fi
-    
-    docker_args+=(-v "$PROJECT_SLOT_DIR/.claude":/home/$DOCKER_USER/.claude)
+    # Mount host's .claude directory to share OAuth session
+    docker_args+=(-v "$HOME/.claude":/home/$DOCKER_USER/.claude)
     
     # Mount .claude.json only if it already exists (from previous session)
     if [[ -f "$PROJECT_SLOT_DIR/.claude.json" ]]; then
@@ -401,6 +397,11 @@ run_claudebox_container() {
         docker_args+=("${container_args[@]}")
     fi
     
+    # Remove stale container with the same name if it exists
+    if [[ -n "$container_name" ]]; then
+        docker rm -f "$container_name" 2>/dev/null || true
+    fi
+
     # Run the container
     if [[ "$VERBOSE" == "true" ]]; then
         echo "[DEBUG] Docker run command: docker run ${docker_args[*]}" >&2
