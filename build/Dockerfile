@@ -90,7 +90,7 @@ RUN echo 'export NVM_DIR="$HOME/.nvm"' >> ~/.bashrc && \
     echo '[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"' >> ~/.bashrc
 
 RUN mkdir /tmp/claude-install && cd /tmp/claude-install && \
-    curl -fsSL https://claude.ai/install.sh | sh && \
+    curl -fsSL https://claude.ai/install.sh | bash && \
     rm -rf /tmp/claude-install
 
 RUN cat >> ~/.zshrc <<'EOF'
