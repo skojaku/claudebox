@@ -2,7 +2,7 @@
 
 [![Docker](https://img.shields.io/badge/Docker-Required-blue.svg)](https://www.docker.com/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![GitHub](https://img.shields.io/badge/GitHub-RchGrav%2Fclaudebox-blue.svg)](https://github.com/RchGrav/claudebox)
+[![GitHub](https://img.shields.io/badge/GitHub-skojaku%2Fclaudebox-blue.svg)](https://github.com/skojaku/claudebox)
 
 The Ultimate Claude Code Docker Development Environment - Run Claude AI's coding assistant in a fully containerized, reproducible environment with pre-configured development profiles and MCP servers.
 
@@ -57,78 +57,45 @@ The Ultimate Claude Code Docker Development Environment - Run Claude AI's coding
 
 ## 🛠️ Installation
 
-ClaudeBox v2.0.0 offers two installation methods:
-
-### Method 1: Self-Extracting Installer (Recommended)
-
-The self-extracting installer is ideal for automated setups and quick installation:
+### Quick Install (Recommended)
 
 ```bash
-# Download the latest release
-wget https://github.com/RchGrav/claudebox/releases/latest/download/claudebox.run
-chmod +x claudebox.run
-./claudebox.run
+curl -fsSL https://raw.githubusercontent.com/skojaku/claudebox/main/install.sh | bash
 ```
 
 This will:
+- Download the latest source from GitHub
 - Extract ClaudeBox to `~/.claudebox/source/`
-- Create a symlink at `~/.local/bin/claudebox` (you may need to add `~/.local/bin` to your PATH)
-- Show setup instructions if PATH configuration is needed
+- Create a symlink at `~/.local/bin/claudebox`
+- Check for Docker (will install automatically on first run)
 
-### Method 2: Archive Installation
-
-For manual installation or custom locations, use the archive:
+### Install a Specific Branch or Tag
 
 ```bash
-# Download the archive
-wget https://github.com/RchGrav/claudebox/releases/latest/download/claudebox-2.0.0.tar.gz
-
-# Extract to your preferred location
-mkdir -p ~/my-tools/claudebox
-tar -xzf claudebox-2.0.0.tar.gz -C ~/my-tools/claudebox
-
-# Run main.sh to create symlink
-cd ~/my-tools/claudebox
-./main.sh
-
-# Or create your own symlink
-ln -s ~/my-tools/claudebox/main.sh ~/.local/bin/claudebox
+CLAUDEBOX_BRANCH=v2.1.0 curl -fsSL https://raw.githubusercontent.com/skojaku/claudebox/main/install.sh | bash
 ```
 
 ### Development Installation
 
-For development or testing the latest changes:
 ```bash
-# Clone the repository
-git clone https://github.com/RchGrav/claudebox.git
+git clone https://github.com/skojaku/claudebox.git
 cd claudebox
-
-# Build the installer
-bash .builder/build.sh
-
-# Run the installer
-./claudebox.run
+CLAUDEBOX_INSTALLER_RUN=true bash main.sh
 ```
 
 ### PATH Configuration
 
-If `claudebox` command is not found after installation, add `~/.local/bin` to your PATH:
+If the `claudebox` command is not found after installation, add `~/.local/bin` to your PATH:
 
 ```bash
 # For Bash
 echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc
 source ~/.bashrc
 
-# For Zsh (macOS default)
+# For Zsh
 echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.zshrc
 source ~/.zshrc
 ```
-
-The installer will:
-- ✅ Extract ClaudeBox to `~/.claudebox/source/`
-- ✅ Create symlink at `~/.local/bin/claudebox`
-- ✅ Check for Docker (install if needed on first run)
-- ✅ Configure Docker for non-root usage (on first run)
 
 
 ## 📚 Usage
@@ -211,9 +178,8 @@ claudebox profile rust go         # Rust + Go
 - **rust** - Rust Development (installed via rustup)
 - **python** - Python Development (managed via uv)
 - **go** - Go Development (installed from upstream archive)
-- **flutter** - Flutter Framework (installed using fvm, use FLUTTER_SDK_VERSION to set different version)
 - **javascript** - JavaScript/TypeScript (Node installed via nvm)
-- **java** - Java Development (Latest LTS via SDKMan, Maven, Gradle, Ant)
+- **java** - Java Development (OpenJDK 17, Maven, Gradle, Ant)
 - **ruby** - Ruby Development (gems, native deps, XML/YAML)
 - **php** - PHP Development (PHP + extensions + Composer)
 
@@ -474,5 +440,49 @@ Made with ❤️ for developers who love clean, reproducible environments
 
 ## Contact
 
-**Author/Maintainer:** RchGrav  
-**GitHub:** [@RchGrav](https://github.com/RchGrav)
+**Author/Maintainer:** skojaku
+**GitHub:** [@skojaku](https://github.com/skojaku)
+
+## 📝 Changelog
+
+### v1.0.0-rc4
+- **Full macOS/Bash 3.2 Compatibility**: Complete rewrite for Bash 3.2 using function-based profile system
+  - Replaced associative arrays with portable getter functions
+  - Fixed uppercase conversion `${var^^}` with POSIX-compliant `tr` command
+  - Eliminated all "unbound variable" errors in strict mode
+  - Single implementation works for both Bash 3.2 and 4+
+- **Project Isolation & Management**: Major improvements to project handling
+  - Projects organized under `~/.claudebox/projects/` for cleaner separation
+  - Single `config.ini` per project replaces multiple config files
+  - Better project listing with size/status display
+  - Fixed JSON handling prevents auth loss
+  - Smart -c flag filtering when no conversation exists
+  - Project claudebox folder mounted at `~/.claudebox` in container
+- **MCP Configuration Support**: Smart MCP settings file handling
+  - Automatically detects `.mcp.json` in project claudebox folder
+  - Merges with workspace `.mcp.json` if both exist
+  - Passes `--mcp-settings-file` to Claude CLI when appropriate
+- **Stability & Quality**: Comprehensive improvements
+  - Applied ShellCheck fixes for better reliability
+  - Fixed unbound variables (`XAUTHORITY`, `profile_file`, etc.)
+  - Improved clean command with fixed `--project all` functionality
+  - Added terminal resize support (SIGWINCH handlers)
+  - Enhanced error handling in build system
+- **Testing**: Added comprehensive test suite
+  - Bash 3.2 compatibility tests
+  - Docker-based testing for actual Bash 3.2 verification
+  - 13 tests covering all compatibility aspects
+
+### v1.0.0-rc3
+- **Flag Prioritizer System**: Implemented robust flag sorting to ensure control flags are processed in correct order
+- **Fixed Shell Mode Bug**: Shell command now works properly with saved flags
+- **Code Simplification**: Removed legacy flag handling code
+- **Improved Entrypoint**: Cleaner flag processing with dedicated control flag handling
+
+### v1.0.0-rc2
+- **Enhanced UI**: Improved menu alignment and info display with emojis and consistent columns
+- **New Commands**: Added `profiles` for quick listing and `allowlist` for firewall management
+- **Project Isolation**: Complete separation of auth, history, and configs per project
+- **Profile Menu**: Interactive profile management with status checking
+- **Clean Menu**: Clearer descriptions showing exact paths for each cleanup option
+- **Volume Architecture**: Fixed mount isolation for proper project separation
